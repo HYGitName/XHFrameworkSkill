@@ -257,7 +257,7 @@ namespace SkillEditor.Runtime
         }
 
         /// <summary>
-        /// 从图表中查找Ability节点
+        /// 从图表中查找Ability节点  最多只一个AbilityNode
         /// </summary>
         private void FindAbilityNode()
         {

@@ -142,7 +142,7 @@ namespace SkillEditor.Runtime
             if (spec.Tags.AssetTags.IsEmpty)
                 return false;
 
-            foreach (var activeAbility in _activeAbilities)
+            foreach (GameplayAbilitySpec activeAbility in _activeAbilities)
             {
                 if (activeAbility.BlocksAbilityWithTags(spec.Tags.AssetTags))
                     return true;

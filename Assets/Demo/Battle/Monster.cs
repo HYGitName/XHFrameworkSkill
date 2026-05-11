@@ -19,7 +19,7 @@ public class Monster : Unit
         }
     }
 
-    void Update()
+        void Update()
     {
         TryNormalAttack();
 
