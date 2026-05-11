@@ -284,7 +284,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 764336642}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.42278305
+  m_Size: 0.42278296
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -823,8 +823,7 @@ MonoBehaviour:
   m_RequiresDepthTextureOption: 2
   m_RequiresOpaqueTextureOption: 2
   m_CameraType: 0
-  m_Cameras:
-  - {fileID: 0}
+  m_Cameras: []
   m_RendererIndex: -1
   m_VolumeLayerMask:
     serializedVersion: 2
