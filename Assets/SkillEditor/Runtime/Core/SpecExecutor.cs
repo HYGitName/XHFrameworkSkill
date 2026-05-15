@@ -27,7 +27,7 @@ namespace SkillEditor.Runtime
             if (string.IsNullOrEmpty(skillId) || string.IsNullOrEmpty(nodeGuid))
                 return;
 
-            var connectedNodes = SkillDataCenter.Instance.GetConnectedNodes(skillId, nodeGuid, outputPortName);
+            List<NodeData> connectedNodes = SkillDataCenter.Instance.GetConnectedNodes(skillId, nodeGuid, outputPortName);
             if (connectedNodes == null || connectedNodes.Count == 0)
                 return;
 

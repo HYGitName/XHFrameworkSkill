@@ -55,24 +55,24 @@ namespace SkillEditor.Runtime
         public event Action<GameplayEventType> OnTGameplayEvent;
         // ============ 构造函数 ============
 
-        public AbilitySystemComponent(UnityEngine.GameObject owner = null)
+        public AbilitySystemComponent(UnityEngine.GameObject owner = null)//构造函数
         {
-            Id = Guid.NewGuid().ToString();
-            Owner = owner;
+            Id = Guid.NewGuid().ToString();//生成唯一ID
+            Owner = owner;//设置所属对象
 
             // 初始化容器
-            Attributes = new AttributeSetContainer();
-            OwnedTags = new GameplayTagContainer();
-            Abilities = new AbilityContainer(this);
-            EffectContainer = new GameplayEffectContainer(this);
+            Attributes = new AttributeSetContainer();//初始化属性容器
+            OwnedTags = new GameplayTagContainer();//初始化标签容器
+            Abilities = new AbilityContainer(this);//初始化技能容器
+            EffectContainer = new GameplayEffectContainer(this);//初始化效果容器
 
             // 订阅事件
-            SubscribeEvents();
+            SubscribeEvents();//订阅事件
 
-            IsInitialized = true;
+            IsInitialized = true;//设置为已初始化
 
             // 注册到GASHost
-            GASHost.Instance.Register(this);
+            GASHost.Instance.Register(this);//注册到GASHost
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace SkillEditor.Runtime
                 // 可以在这里处理标签变化的全局逻辑
             };
 
-            Attributes.OnAnyAttributeChanged += (Attribute, before, after) =>
+            Attributes.OnAnyAttributeChanged += (Attribute, before, after) =>//属性变化事件
             {
                 if (Attribute.AttrType == AttrType.Health)
                 {
@@ -138,17 +138,17 @@ namespace SkillEditor.Runtime
             if (spec == null)
                 return false;
 
-            bool success = Abilities.TryActivateAbility(spec, target);
+            bool success = Abilities.TryActivateAbility(spec, target);//尝试激活技能
 
             if (success)
             {
-                OnAbilityActivated?.Invoke(spec);
+                OnAbilityActivated?.Invoke(spec);//触发技能激活事件
 
                 // 订阅技能结束事件
-                spec.OnEnded += HandleAbilityEnded;
+                spec.OnEnded += HandleAbilityEnded;//订阅技能结束事件
             }
 
-            return success;
+            return success;//返回是否成功
         }
 
         /// <summary>
@@ -156,7 +156,7 @@ namespace SkillEditor.Runtime
         /// </summary>
         public void CancelAbility(GameplayAbilitySpec spec)
         {
-            Abilities.CancelAbility(spec);
+            Abilities.CancelAbility(spec);//取消技能
         }
 
         /// <summary>
@@ -172,8 +172,8 @@ namespace SkillEditor.Runtime
         /// </summary>
         private void HandleAbilityEnded(GameplayAbilitySpec spec, bool wasCancelled)
         {
-            spec.OnEnded -= HandleAbilityEnded;
-            OnAbilityEnded?.Invoke(spec, wasCancelled);
+            spec.OnEnded -= HandleAbilityEnded;//取消订阅技能结束事件
+            OnAbilityEnded?.Invoke(spec, wasCancelled);//订阅技能结束事件
         }
 
         // ============ 效果相关 ============
