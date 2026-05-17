@@ -14,7 +14,7 @@ namespace SkillEditor.Runtime
     {
         // ============ 基础标识 ============
         public string SpecId { get; private set; }
-        public string SkillId { get; private set; }
+        public string GraphDataName { get; private set; }
         public string NodeGuid { get; private set; }
         public SpecExecutionContext Context { get; private set; }
         public AbilitySystemComponent Source { get; private set; }
@@ -42,16 +42,16 @@ namespace SkillEditor.Runtime
         private List<GameplayCueSpec> _triggeredCueSpecs;
 
         // ============ 静态数据访问 ============
-        protected NodeData NodeData => SkillDataCenter.Instance.GetNodeData(SkillId, NodeGuid);
+        protected NodeData NodeData => SkillDataCenter.Instance.GetNodeData(GraphDataName, NodeGuid);
         public EffectNodeData EffectNodeData => NodeData as EffectNodeData;
 
         public float RemainingTime => EffectNodeData?.durationType == EffectDurationType.Duration ? Math.Max(0f, Duration - ElapsedTime) : -1f;
 
         // ============ 初始化 ============
-        public virtual void Initialize(string skillId, string nodeGuid, SpecExecutionContext context)
+        public virtual void Initialize(string graphDataName, string nodeGuid, SpecExecutionContext context)
         {
             SpecId = Guid.NewGuid().ToString();
-            SkillId = skillId;
+            GraphDataName = graphDataName;
             NodeGuid = nodeGuid;
             Context = context;
             Source = context?.Caster;
@@ -121,7 +121,7 @@ namespace SkillEditor.Runtime
                     {
                         var overflowPolicy = existingData?.stackOverflowPolicy ?? StackOverflowPolicy.DenyApplication;
                         if (overflowPolicy == StackOverflowPolicy.AllowOverflowEffect)
-                            SpecExecutor.ExecuteConnectedNodes(SkillId, NodeGuid, "溢出", GetExecutionContext());
+                            SpecExecutor.ExecuteConnectedNodes(GraphDataName, NodeGuid, "溢出", GetExecutionContext());
                         if (overflowPolicy == StackOverflowPolicy.DenyApplication)
                         {
                             existingEffect.Refresh();
@@ -206,7 +206,7 @@ namespace SkillEditor.Runtime
                 }
             }
 
-            SpecExecutor.ExecuteConnectedNodes(SkillId, NodeGuid, "初始效果", ctx);
+            SpecExecutor.ExecuteConnectedNodes(GraphDataName, NodeGuid, "初始效果", ctx);
             OnInitialHook(target);
         }
 
@@ -217,7 +217,7 @@ namespace SkillEditor.Runtime
         private void ExecutePeriodicFlow()
         {
             var ctx = GetExecutionContext();
-            SpecExecutor.ExecuteConnectedNodes(SkillId, NodeGuid, "每周期执行", ctx);
+            SpecExecutor.ExecuteConnectedNodes(GraphDataName, NodeGuid, "每周期执行", ctx);
             OnPeriodicHook();
         }
 
@@ -228,7 +228,7 @@ namespace SkillEditor.Runtime
         private void ExecuteCompleteFlow()
         {
             var ctx = GetExecutionContext();
-            SpecExecutor.ExecuteConnectedNodes(SkillId, NodeGuid, "完成效果", ctx);
+            SpecExecutor.ExecuteConnectedNodes(GraphDataName, NodeGuid, "完成效果", ctx);
             OnCompleteHook();
         }
 
@@ -282,7 +282,7 @@ namespace SkillEditor.Runtime
                 PeriodTimer = 0f;
 
             WasRefreshed = true;
-            SpecExecutor.ExecuteConnectedNodes(SkillId, NodeGuid, "刷新时", GetExecutionContext());
+            SpecExecutor.ExecuteConnectedNodes(GraphDataName, NodeGuid, "刷新时", GetExecutionContext());
         }
 
         // ============ 过期和移除 ============
@@ -354,7 +354,7 @@ namespace SkillEditor.Runtime
             if (Target != null && !Tags.GrantedTags.IsEmpty)
                 Target.OwnedTags.RemoveTags(Tags.GrantedTags);
             UnregisterTagListener();
-            SpecExecutor.ExecuteConnectedNodes(SkillId, NodeGuid, "全部移除后", GetExecutionContext());
+            SpecExecutor.ExecuteConnectedNodes(GraphDataName, NodeGuid, "全部移除后", GetExecutionContext());
             ExecuteCompleteFlow();
 
             IsExpired = true;
@@ -391,7 +391,7 @@ namespace SkillEditor.Runtime
             if (Target != null && !Tags.GrantedTags.IsEmpty)
                 Target.OwnedTags.RemoveTags(Tags.GrantedTags);
 
-            SpecExecutor.ExecuteConnectedNodes(SkillId, NodeGuid, "全部移除后", GetExecutionContext());
+            SpecExecutor.ExecuteConnectedNodes(GraphDataName, NodeGuid, "全部移除后", GetExecutionContext());
 
             IsExpired = true;
         }

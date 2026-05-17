@@ -48,7 +48,7 @@ namespace SkillEditor.Runtime
             var ctx = GetExecutionContext();
             ctx.SetCustomData("Heal", baseHeal);
 
-            SpecExecutor.ExecuteConnectedNodes(SkillId, NodeGuid, "治疗", GetExecutionContext());
+            SpecExecutor.ExecuteConnectedNodes(GraphDataName, NodeGuid, "治疗", GetExecutionContext());
         }
 
         /// <summary>

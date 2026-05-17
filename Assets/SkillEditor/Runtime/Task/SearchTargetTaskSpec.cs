@@ -35,7 +35,7 @@ namespace SkillEditor.Runtime
             var nodeData = SearchNodeData;
             if (nodeData == null)
             {
-                SpecExecutor.ExecuteConnectedNodes(SkillId, NodeGuid, "无目标", GetExecutionContext());
+                SpecExecutor.ExecuteConnectedNodes(GraphDataName, NodeGuid, "无目标", GetExecutionContext());
                 return;
             }
 
@@ -71,7 +71,7 @@ namespace SkillEditor.Runtime
             var ctx = GetExecutionContext();
             if (_foundTargets.Count == 0)
             {
-                SpecExecutor.ExecuteConnectedNodes(SkillId, NodeGuid, "无目标", ctx);
+                SpecExecutor.ExecuteConnectedNodes(GraphDataName, NodeGuid, "无目标", ctx);
             }
             else
             {
@@ -79,12 +79,12 @@ namespace SkillEditor.Runtime
                 foreach (var findTarget in _foundTargets)
                 {
                     var targetCtx = ctx.CreateWithParentInput(findTarget);
-                    SpecExecutor.ExecuteConnectedNodes(SkillId, NodeGuid, "对每个目标", targetCtx);
+                    SpecExecutor.ExecuteConnectedNodes(GraphDataName, NodeGuid, "对每个目标", targetCtx);
                 }
             }
 
             // 执行完成效果
-            SpecExecutor.ExecuteConnectedNodes(SkillId, NodeGuid, "完成效果", ctx);
+            SpecExecutor.ExecuteConnectedNodes(GraphDataName, NodeGuid, "完成效果", ctx);
         }
 
         /// <summary>

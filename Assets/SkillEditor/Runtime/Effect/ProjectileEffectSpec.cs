@@ -119,7 +119,7 @@ namespace SkillEditor.Runtime
                 CollisionTargetTags = nodeData.collisionTargetTags,
                 CollisionExcludeTags = nodeData.collisionExcludeTags,
                 TargetBindingName = nodeData.targetBindingName,
-                SkillId = SkillId,
+                GraphDataName = GraphDataName,
                 NodeGuid = NodeGuid,
                 Context = Context,
                 SourceASC = Source
@@ -148,7 +148,7 @@ namespace SkillEditor.Runtime
             hitContext.ProjectileObject = _projectileObject;
 
             // 执行碰撞时端口
-            SpecExecutor.ExecuteConnectedNodes(SkillId, NodeGuid, "碰撞时", hitContext);
+            SpecExecutor.ExecuteConnectedNodes(GraphDataName, NodeGuid, "碰撞时", hitContext);
         }
 
         /// <summary>
@@ -162,7 +162,7 @@ namespace SkillEditor.Runtime
             ctx.ProjectileObject = _projectileObject;
 
             // 执行到达目标位置端口
-            SpecExecutor.ExecuteConnectedNodes(SkillId, NodeGuid, "到达目标位置", ctx);
+            SpecExecutor.ExecuteConnectedNodes(GraphDataName, NodeGuid, "到达目标位置", ctx);
         }
 
         /// <summary>
@@ -234,7 +234,7 @@ namespace SkillEditor.Runtime
         public GameplayTagSet CollisionTargetTags;
         public GameplayTagSet CollisionExcludeTags;
         public string TargetBindingName;
-        public string SkillId;
+        public string GraphDataName;
         public string NodeGuid;
         public SpecExecutionContext Context;
         public AbilitySystemComponent SourceASC;

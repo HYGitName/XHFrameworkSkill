@@ -18,22 +18,22 @@ namespace SkillEditor.Runtime
         /// <summary>
         /// 执行指定端口连接的所有节点
         /// </summary>
-        /// <param name="skillId">技能ID</param>
+        /// <param name="graphDataName">技能图表资源名</param>
         /// <param name="nodeGuid">当前节点Guid</param>
         /// <param name="outputPortName">输出端口名称</param>
         /// <param name="context">执行上下文</param>
-        public static void ExecuteConnectedNodes(string skillId, string nodeGuid, string outputPortName, SpecExecutionContext context)
+        public static void ExecuteConnectedNodes(string graphDataName, string nodeGuid, string outputPortName, SpecExecutionContext context)
         {
-            if (string.IsNullOrEmpty(skillId) || string.IsNullOrEmpty(nodeGuid))
+            if (string.IsNullOrEmpty(graphDataName) || string.IsNullOrEmpty(nodeGuid))
                 return;
 
-            List<NodeData> connectedNodes = SkillDataCenter.Instance.GetConnectedNodes(skillId, nodeGuid, outputPortName);
+            List<NodeData> connectedNodes = SkillDataCenter.Instance.GetConnectedNodes(graphDataName, nodeGuid, outputPortName);
             if (connectedNodes == null || connectedNodes.Count == 0)
                 return;
 
             foreach (var nodeData in connectedNodes)
             {
-                ExecuteNode(skillId, nodeData, context);
+                ExecuteNode(graphDataName, nodeData, context);
             }
         }
 
@@ -41,14 +41,14 @@ namespace SkillEditor.Runtime
         /// 执行指定端口连接的Cue节点，并返回触发的CueSpec列表
         /// 用于需要管理Cue生命周期的场景（如动画时间Cue）
         /// </summary>
-        public static List<GameplayCueSpec> ExecuteConnectedCueNodes(string skillId, string nodeGuid, string outputPortName, SpecExecutionContext context)
+        public static List<GameplayCueSpec> ExecuteConnectedCueNodes(string graphDataName, string nodeGuid, string outputPortName, SpecExecutionContext context)
         {
             var triggeredCues = new List<GameplayCueSpec>();
 
-            if (string.IsNullOrEmpty(skillId) || string.IsNullOrEmpty(nodeGuid))
+            if (string.IsNullOrEmpty(graphDataName) || string.IsNullOrEmpty(nodeGuid))
                 return triggeredCues;
 
-            var connectedNodes = SkillDataCenter.Instance.GetConnectedNodes(skillId, nodeGuid, outputPortName);
+            var connectedNodes = SkillDataCenter.Instance.GetConnectedNodes(graphDataName, nodeGuid, outputPortName);
             if (connectedNodes == null || connectedNodes.Count == 0)
                 return triggeredCues;
 
@@ -57,7 +57,7 @@ namespace SkillEditor.Runtime
                 var category = GetNodeCategory(nodeData.nodeType);
                 if (category == NodeCategory.Cue)
                 {
-                    var cueSpec = ExecuteCueNodeAndReturn(skillId, nodeData, context);
+                    var cueSpec = ExecuteCueNodeAndReturn(graphDataName, nodeData, context);
                     if (cueSpec != null)
                     {
                         triggeredCues.Add(cueSpec);
@@ -66,7 +66,7 @@ namespace SkillEditor.Runtime
                 else
                 {
                     // 非Cue节点正常执行
-                    ExecuteNode(skillId, nodeData, context);
+                    ExecuteNode(graphDataName, nodeData, context);
                 }
             }
 
@@ -76,7 +76,7 @@ namespace SkillEditor.Runtime
         /// <summary>
         /// 执行单个节点
         /// </summary>
-        public static void ExecuteNode(string skillId, NodeData nodeData, SpecExecutionContext context)
+        public static void ExecuteNode(string graphDataName, NodeData nodeData, SpecExecutionContext context)
         {
             if (nodeData == null)
                 return;
@@ -86,19 +86,19 @@ namespace SkillEditor.Runtime
             switch (category)
             {
                 case NodeCategory.Effect:
-                    ExecuteEffectNode(skillId, nodeData, context);
+                    ExecuteEffectNode(graphDataName, nodeData, context);
                     break;
 
                 case NodeCategory.Task:
-                    ExecuteTaskNode(skillId, nodeData, context);
+                    ExecuteTaskNode(graphDataName, nodeData, context);
                     break;
 
                 case NodeCategory.Condition:
-                    ExecuteConditionNode(skillId, nodeData, context);
+                    ExecuteConditionNode(graphDataName, nodeData, context);
                     break;
 
                 case NodeCategory.Cue:
-                    ExecuteCueNode(skillId, nodeData, context);
+                    ExecuteCueNode(graphDataName, nodeData, context);
                     break;
             }
         }
@@ -106,13 +106,13 @@ namespace SkillEditor.Runtime
         /// <summary>
         /// 执行效果节点
         /// </summary>
-        private static void ExecuteEffectNode(string skillId, NodeData nodeData, SpecExecutionContext context)
+        private static void ExecuteEffectNode(string graphDataName, NodeData nodeData, SpecExecutionContext context)
         {
             var effectSpec = SpecFactory.CreateEffectSpec(nodeData.nodeType);
             if (effectSpec == null)
                 return;
 
-            effectSpec.Initialize(skillId, nodeData.guid, context);
+            effectSpec.Initialize(graphDataName, nodeData.guid, context);
             effectSpec.Execute();
 
             // 如果是持续/周期效果且正在运行，注册到对应的Owner
@@ -125,26 +125,26 @@ namespace SkillEditor.Runtime
         /// <summary>
         /// 执行任务节点
         /// </summary>
-        private static void ExecuteTaskNode(string skillId, NodeData nodeData, SpecExecutionContext context)
+        private static void ExecuteTaskNode(string graphDataName, NodeData nodeData, SpecExecutionContext context)
         {
             var taskSpec = SpecFactory.CreateTaskSpec(nodeData.nodeType);
             if (taskSpec == null)
                 return;
 
-            taskSpec.Initialize(skillId, nodeData.guid, context);
+            taskSpec.Initialize(graphDataName, nodeData.guid, context);
             taskSpec.Execute();
         }
 
         /// <summary>
         /// 执行条件节点
         /// </summary>
-        private static void ExecuteConditionNode(string skillId, NodeData nodeData, SpecExecutionContext context)
+        private static void ExecuteConditionNode(string graphDataName, NodeData nodeData, SpecExecutionContext context)
         {
             var conditionSpec = SpecFactory.CreateConditionSpec(nodeData.nodeType);
             if (conditionSpec == null)
                 return;
 
-            conditionSpec.Initialize(skillId, nodeData.guid, context);
+            conditionSpec.Initialize(graphDataName, nodeData.guid, context);
             conditionSpec.Execute();
         }
 
@@ -165,13 +165,13 @@ namespace SkillEditor.Runtime
         /// <summary>
         /// 执行Cue节点
         /// </summary>
-        private static void ExecuteCueNode(string skillId, NodeData nodeData, SpecExecutionContext context)
+        private static void ExecuteCueNode(string graphDataName, NodeData nodeData, SpecExecutionContext context)
         {
             var cueSpec = SpecFactory.CreateCueSpec(nodeData.nodeType);
             if (cueSpec == null)
                 return;
 
-            cueSpec.Initialize(skillId, nodeData.guid, context);
+            cueSpec.Initialize(graphDataName, nodeData.guid, context);
             cueSpec.Execute();
 
             // 如果Cue正在运行，注册到对应的Owner
@@ -184,13 +184,13 @@ namespace SkillEditor.Runtime
         /// <summary>
         /// 执行Cue节点并返回CueSpec（用于外部管理生命周期）
         /// </summary>
-        private static GameplayCueSpec ExecuteCueNodeAndReturn(string skillId, NodeData nodeData, SpecExecutionContext context)
+        private static GameplayCueSpec ExecuteCueNodeAndReturn(string graphDataName, NodeData nodeData, SpecExecutionContext context)
         {
             var cueSpec = SpecFactory.CreateCueSpec(nodeData.nodeType);
             if (cueSpec == null)
                 return null;
 
-            cueSpec.Initialize(skillId, nodeData.guid, context);
+            cueSpec.Initialize(graphDataName, nodeData.guid, context);
             cueSpec.Execute();
 
             // 注意：这里不注册到Owner，由调用方管理生命周期

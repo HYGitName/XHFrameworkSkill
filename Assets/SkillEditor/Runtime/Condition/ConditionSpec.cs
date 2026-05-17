@@ -11,20 +11,20 @@ namespace SkillEditor.Runtime
     {
         // ============ 基础标识 ============
         public string SpecId { get; private set; }
-        public string SkillId { get; private set; }
+        public string GraphDataName { get; private set; }
         public string NodeGuid { get; private set; }
         public SpecExecutionContext Context { get; private set; }
         public AbilitySystemComponent Source { get; private set; }
 
         // ============ 静态数据访问 ============
-        protected NodeData NodeData => SkillDataCenter.Instance.GetNodeData(SkillId, NodeGuid);
+        protected NodeData NodeData => SkillDataCenter.Instance.GetNodeData(GraphDataName, NodeGuid);
         public ConditionNodeData ConditionNodeData => NodeData as ConditionNodeData;
 
         // ============ 初始化 ============
-        public virtual void Initialize(string skillId, string nodeGuid, SpecExecutionContext context)
+        public virtual void Initialize(string graphDataName, string nodeGuid, SpecExecutionContext context)
         {
             SpecId = Guid.NewGuid().ToString();
-            SkillId = skillId;
+            GraphDataName = graphDataName;
             NodeGuid = nodeGuid;
             Context = context;
             Source = context?.Caster;
@@ -45,7 +45,7 @@ namespace SkillEditor.Runtime
             bool result = Evaluate(target);
 
             // 根据结果执行对应分支
-            SpecExecutor.ExecuteConnectedNodes(SkillId, NodeGuid, result ? "是" : "否", GetExecutionContext());
+            SpecExecutor.ExecuteConnectedNodes(GraphDataName, NodeGuid, result ? "是" : "否", GetExecutionContext());
         }
 
         /// <summary>

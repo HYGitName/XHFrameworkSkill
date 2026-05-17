@@ -93,9 +93,9 @@ namespace SkillEditor.Runtime
         public string SpecId { get; private set; }
 
         /// <summary>
-        /// 技能ID（用于从数据中心获取数据）
+        /// 技能图表资源名（用于从数据中心获取数据）
         /// </summary>
-        public string SkillId { get; private set; }
+        public string GraphDataName { get; private set; }
 
         /// <summary>
         /// 拥有此技能的ASC
@@ -137,7 +137,7 @@ namespace SkillEditor.Runtime
         /// <summary>
         /// 技能图表数据（从数据中心获取）
         /// </summary>
-        public SkillGraphData GraphData => SkillDataCenter.Instance.GetSkillGraph(SkillId);
+        public SkillGraphData GraphData => SkillDataCenter.Instance.GetSkillGraph(GraphDataName);
 
         /// <summary>
         /// 技能节点数据
@@ -234,10 +234,10 @@ namespace SkillEditor.Runtime
             SpecId = Guid.NewGuid().ToString();
             Owner = owner;
        
-            // 使用ScriptableObject的name作为skillId
+            // 使用 ScriptableObject 的 name 作为 graphDataName
             if (graphData != null)
             {
-                SkillId = graphData.name;
+                GraphDataName = graphData.name;
                 // 注册到数据中心
                 SkillDataCenter.Instance.RegisterSkillGraph(graphData);
             }
@@ -288,7 +288,7 @@ namespace SkillEditor.Runtime
 
             if (string.IsNullOrEmpty(_abilityNodeGuid)) return;
 
-            var connectedNodes = SkillDataCenter.Instance.GetConnectedNodes(SkillId, _abilityNodeGuid, "动画");
+            var connectedNodes = SkillDataCenter.Instance.GetConnectedNodes(GraphDataName, _abilityNodeGuid, "动画");
             if (connectedNodes == null) return;
 
             foreach (var node in connectedNodes)
@@ -492,7 +492,7 @@ namespace SkillEditor.Runtime
             if (string.IsNullOrEmpty(_cooldownNodeGuid))
                 return default;
 
-            var cooldownNodeData = SkillDataCenter.Instance.GetNodeData(SkillId, _cooldownNodeGuid) as CooldownEffectNodeData;
+            var cooldownNodeData = SkillDataCenter.Instance.GetNodeData(GraphDataName, _cooldownNodeGuid) as CooldownEffectNodeData;
             if (cooldownNodeData != null && cooldownNodeData.grantedTags.Tags != null && cooldownNodeData.grantedTags.Tags.Length > 0)
             {
                 return cooldownNodeData.grantedTags.Tags[0];
@@ -508,7 +508,7 @@ namespace SkillEditor.Runtime
             if (string.IsNullOrEmpty(_costNodeGuid))
                 return true;
 
-            var costNodeData = SkillDataCenter.Instance.GetNodeData(SkillId, _costNodeGuid) as CostEffectNodeData;
+            var costNodeData = SkillDataCenter.Instance.GetNodeData(GraphDataName, _costNodeGuid) as CostEffectNodeData;
             if (costNodeData?.attributeModifiers == null)
                 return true;
 
@@ -583,19 +583,19 @@ namespace SkillEditor.Runtime
             // 执行消耗节点（扣除资源）
             if (!string.IsNullOrEmpty(_abilityNodeGuid))
             {
-                SpecExecutor.ExecuteConnectedNodes(SkillId, _abilityNodeGuid, "消耗", _context);
+                SpecExecutor.ExecuteConnectedNodes(GraphDataName, _abilityNodeGuid, "消耗", _context);
             }
 
             // 执行冷却节点（应用冷却）
             if (!string.IsNullOrEmpty(_abilityNodeGuid))
             {
-                SpecExecutor.ExecuteConnectedNodes(SkillId, _abilityNodeGuid, "冷却", _context);
+                SpecExecutor.ExecuteConnectedNodes(GraphDataName, _abilityNodeGuid, "冷却", _context);
             }
 
             // 从Ability节点的"激活"端口开始执行（使用SpecExecutor）
             if (!string.IsNullOrEmpty(_abilityNodeGuid))
             {
-                SpecExecutor.ExecuteConnectedNodes(SkillId, _abilityNodeGuid, "激活", _context);
+                SpecExecutor.ExecuteConnectedNodes(GraphDataName, _abilityNodeGuid, "激活", _context);
             }
 
             OnActivated?.Invoke(this);
@@ -713,7 +713,7 @@ namespace SkillEditor.Runtime
             {
                 if (AbilityEventPortData.eventType==gameplayEvent)
                 {
-                    SpecExecutor.ExecuteConnectedNodes(SkillId, _abilityNodeGuid,  AbilityEventPortData.PortId, _context);
+                    SpecExecutor.ExecuteConnectedNodes(GraphDataName, _abilityNodeGuid,  AbilityEventPortData.PortId, _context);
                 }
             }
         }
@@ -856,7 +856,7 @@ namespace SkillEditor.Runtime
                 {
                     te.HasTriggered = true;
                     // 通过端口ID执行连接的节点（时间效果端口在AnimationNode上）
-                    SpecExecutor.ExecuteConnectedNodes(SkillId, _animationNodeGuid, te.PortId, _context);
+                    SpecExecutor.ExecuteConnectedNodes(GraphDataName, _animationNodeGuid, te.PortId, _context);
                 }
             }
         }
@@ -892,7 +892,7 @@ namespace SkillEditor.Runtime
                 {
                     tc.HasStarted = true;
                     // 触发连接的Cue节点，并记录触发的CueSpec（时间Cue端口在AnimationNode上）
-                    var triggeredSpecs = SpecExecutor.ExecuteConnectedCueNodes(SkillId, _animationNodeGuid, tc.PortId, _context);
+                    var triggeredSpecs = SpecExecutor.ExecuteConnectedCueNodes(GraphDataName, _animationNodeGuid, tc.PortId, _context);
                     foreach (var triggeredSpec in triggeredSpecs)
                     {
                         if (triggeredSpec != null&&triggeredSpec.DestroyWithNode)

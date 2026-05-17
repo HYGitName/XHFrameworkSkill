@@ -16,9 +16,9 @@ namespace SkillEditor.Runtime
         public string SpecId { get; private set; }
 
         /// <summary>
-        /// 技能ID（用于从数据中心获取数据）
+        /// 技能图表资源名（用于从数据中心获取数据）
         /// </summary>
-        public string SkillId { get; private set; }
+        public string GraphDataName { get; private set; }
 
         /// <summary>
         /// 节点Guid
@@ -57,7 +57,7 @@ namespace SkillEditor.Runtime
         /// <summary>
         /// 获取节点数据（从数据中心）
         /// </summary>
-        protected NodeData NodeData => SkillDataCenter.Instance.GetNodeData(SkillId, NodeGuid);
+        protected NodeData NodeData => SkillDataCenter.Instance.GetNodeData(GraphDataName, NodeGuid);
 
         /// <summary>
         /// 获取Cue节点数据
@@ -73,10 +73,10 @@ namespace SkillEditor.Runtime
         /// <summary>
         /// 初始化
         /// </summary>
-        public virtual void Initialize(string skillId, string nodeGuid, SpecExecutionContext context)
+        public virtual void Initialize(string graphDataName, string nodeGuid, SpecExecutionContext context)
         {
             SpecId = Guid.NewGuid().ToString();
-            SkillId = skillId;
+            GraphDataName = graphDataName;
             NodeGuid = nodeGuid;
             Context = context;
             IsRunning = false;

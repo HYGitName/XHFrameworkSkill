@@ -83,7 +83,7 @@ namespace SkillEditor.Runtime
             var ctx = Context.CreateWithParentInput(target);
 
             // 执行进入时端口
-            SpecExecutor.ExecuteConnectedNodes(SkillId, NodeGuid, "进入时", ctx);
+            SpecExecutor.ExecuteConnectedNodes(GraphDataName, NodeGuid, "进入时", ctx);
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace SkillEditor.Runtime
             var ctx = Context.CreateWithParentInput(target);
 
             // 执行离开时端口
-            SpecExecutor.ExecuteConnectedNodes(SkillId, NodeGuid, "离开时", ctx);
+            SpecExecutor.ExecuteConnectedNodes(GraphDataName, NodeGuid, "离开时", ctx);
         }
    
 
